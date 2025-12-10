@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>HTML Notes –  Slides</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", system-ui, sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      background: radial-gradient(circle at top, #020617, #000);
+      color: #e5e7eb;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* TOP BAR */
+    header {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      background: rgba(15,23,42,0.9);
+      border-bottom: 1px solid #0f172a;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      z-index: 10;
+    }
+
+    header h1 {
+      font-size: 18px;
+      letter-spacing: 2px;
+      color: #38bdf8;
+      text-shadow: 0 0 10px rgba(56,189,248,0.7);
+    }
+
+    .level-pill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid #38bdf8;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* SLIDE AREA */
+    .slide-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+    }
+
+    .slide {
+      position: absolute;
+      width: 100%;
+      max-width: 1000px;
+      height: calc(100% - 40px);
+      background: rgba(15,23,42,0.92);
+      border-radius: 24px;
+      border: 1px solid #1f2937;
+      box-shadow: 0 0 40px rgba(15,23,42,0.7);
+      padding: 32px 40px;
+      opacity: 0;
+      transform: translateY(120px) scale(0.96);
+      pointer-events: none;
+      transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      will-change: transform, opacity;
+      overflow: hidden;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+      z-index: 2;
+    }
+
+    .slide.prev {
+      transform: translateY(-120px) scale(0.96);
+      z-index: 1;
+    }
+
+    /* ensure slide content scrolls on small screens */
+    .slide .content {
+      max-height: calc(100vh - 220px);
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+
+    @media (max-width: 900px) {
+      .slide {
+        max-width: 92%;
+        height: auto;
+        max-height: calc(100vh - 140px);
+        border-radius: 18px;
+        padding: 22px;
+      }
+
+      .slide .content {
+        max-height: calc(100vh - 220px);
+      }
+
+      header {
+        padding: 0 14px;
+      }
+
+      .level-input {
+        width: 140px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      body { height: 100vh; }
+
+      header {
+        height: 56px;
+        padding: 8px 12px;
+      }
+
+      header h1 {
+        font-size: 14px;
+      }
+
+      .controls {
+        flex-direction: column;
+        gap: 8px;
+        align-items: stretch;
+        padding: 10px 12px;
+        height: auto;
+      }
+
+      .btn {
+        padding: 10px 14px;
+        font-size: 15px;
+        width: 100%;
+        justify-content: center;
+      }
+
+      .progress {
+        margin: 0;
+        width: 100%;
+        height: 8px;
+      }
+
+      .slide {
+        padding: 18px;
+        border-radius: 14px;
+      }
+
+      .slide-title { font-size: 18px; }
+      .slide-sub { font-size: 13px; }
+      .slide .content { max-height: calc(100vh - 220px); }
+    }
+
+    .slide-title {
+      font-size: 26px;
+      margin-bottom: 6px;
+      color: #f9fafb;
+    }
+
+    .slide-sub {
+      font-size: 14px;
+      color: #9ca3af;
+      margin-bottom: 18px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid #38bdf8;
+      color: #38bdf8;
+    }
+
+    .content p {
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 8px;
+    }
+
+    .content ul {
+      margin: 6px 0 10px 18px;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .content li {
+      margin-bottom: 4px;
+    }
+
+    .code {
+      background: #020617;
+      border-radius: 12px;
+      border: 1px solid #111827;
+      padding: 10px 12px;
+      font-family: Consolas, monospace;
+      font-size: 13px;
+      margin: 10px 0;
+      line-height: 1.6;
+      color: #7dd3fc;
+      overflow-x: auto;
+    }
+
+    .highlight {
+      color: #38bdf8;
+    }
+
+    /* NAVIGATION */
+    .controls {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      background: rgba(15,23,42,0.95);
+      border-top: 1px solid #0f172a;
+    }
+
+    .btn {
+      border: 1px solid #38bdf8;
+      color: #e5e7eb;
+      background: transparent;
+      padding: 6px 18px;
+      border-radius: 999px;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn:disabled {
+      border-color: #4b5563;
+      color: #6b7280;
+      cursor: not-allowed;
+    }
+
+    .btn:not(:disabled):hover {
+      background: #38bdf8;
+      color: #020617;
+      transform: translateY(-1px);
+    }
+
+    .progress {
+      flex: 1;
+      margin: 0 20px;
+      height: 6px;
+      border-radius: 999px;
+      background: #111827;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #22c55e, #38bdf8);
+      transition: width 0.25s;
+    }
+
+    .slide-count {
+      font-size: 12px;
+      color: #9ca3af;
+      min-width: 110px;
+      text-align: right;
+    }
+
+    .level-input {
+      background: transparent;
+      border: 1px solid #38bdf8;
+      color: inherit;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      width: 170px;
+      outline: none;
+    }
+    .level-input:focus {
+      box-shadow: 0 0 8px rgba(56,189,248,0.12);
+    }
+    .level-input.invalid {
+      border-color: #f87171;
+      box-shadow: 0 0 8px rgba(248,113,113,0.18);
+    }
+
+    @media (max-width: 768px) {
+      .slide {
+        padding: 22px 18px;
+      }
+      .slide-title {
+        font-size: 20px;
+      }
+      header h1 {
+        font-size: 15px;
+      }
+      .controls {
+        padding: 0 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>HTML NOTES – ANIMATED</h1>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <input id="levelInput" class="level-input" placeholder="Go to level (1/2/3/Pro)" />
+      <button class="btn" id="goLevelBtn">Go</button>
+      <div class="level-pill" id="levelText">Level 1</div>
+    </div>
+  </header>
+
+  <div class="slide-wrapper">
+    <!-- SLIDE 1: HTML / CSS / JS -->
+    <section class="slide active" data-level="Level 1">
+      <div class="tag">Overview</div>
+      <h2 class="slide-title">HTML, CSS &amp; JS</h2>
+      <p class="slide-sub">Structure · Style · Logic</p>
+      <div class="content">
+        <p><span class="highlight">HTML</span> – Structure / layout of the web page.</p>
+        <p><span class="highlight">CSS</span> – Style, colours, fonts, look &amp; feel.</p>
+        <p><span class="highlight">JavaScript</span> – Logic &amp; behaviour.</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: WHAT IS HTML -->
+    <section class="slide" data-level="Level 1">
+      <div class="tag">Definition</div>
+      <h2 class="slide-title">What is HTML?</h2>
+      <div class="content">
+        <p><b>HTML</b> = <b>Hyper Text Markup Language</b>.</p>
+        <p>It is the code used to <b>structure a web page and its content</b>.</p>
+        <p>The components used to design the structure of websites are called <span class="highlight">HTML tags</span>.</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: FIRST FILE -->
+    <section class="slide" data-level="Level 1">
+      <div class="tag">First Page</div>
+      <h2 class="slide-title">First HTML File</h2>
+      <div class="content">
+        <p>Common first file name is <b>index.html</b>.</p>
+        <p>It is usually the default name for a website’s <b>homepage</b>.</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: TAG & ELEMENT -->
+    <section class="slide" data-level="Level 1">
+      <div class="tag">Tag vs Element</div>
+      <h2 class="slide-title">HTML Tag &amp; Element</h2>
+      <div class="content">
+        <p>An <b>HTML tag</b> is a container for some content or other HTML tags.</p>
+        <div class="code">
+&lt;p&gt; This is a paragraph &lt;/p&gt;
+        </div>
+        <p><b>Element</b> = opening tag + content + closing tag.</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: BASIC PAGE -->
+    <section class="slide" data-level="Level 1">
+      <div class="tag">Syntax</div>
+      <h2 class="slide-title">Basic HTML Page</h2>
+      <div class="content">
+        <div class="code">
+&lt;!DOCTYPE html&gt;  &lt;!-- tells browser you are using HTML5 --&gt;<br>
+&lt;html&gt;          &lt;!-- root of the document --&gt;<br>
+ &lt;head&gt;         &lt;!-- container for metadata --&gt;<br>
+  &lt;title&gt;My First Page&lt;/title&gt; &lt;!-- page title --&gt;<br>
+ &lt;/head&gt;<br>
+ &lt;body&gt;         &lt;!-- contains all data rendered by browser --&gt;<br>
+  &lt;p&gt;hello world&lt;/p&gt; &lt;!-- paragraph tag --&gt;<br>
+ &lt;/body&gt;<br>
+&lt;/html&gt;
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: QUICK POINTS -->
+    <section class="slide" data-level="Level 1">
+      <div class="tag">Quick Points</div>
+      <h2 class="slide-title">HTML Basics – Recap</h2>
+      <div class="content">
+        <ul>
+          <li><code>&lt;html&gt;</code> tag is parent of <code>&lt;head&gt;</code> &amp; <code>&lt;body&gt;</code>.</li>
+          <li>Most HTML elements have opening &amp; closing tags with content in between.</li>
+          <li>Some tags have no closing tag (void tags), e.g. <code>&lt;br&gt;</code>, <code>&lt;hr&gt;</code>, <code>&lt;img&gt;</code>.</li>
+          <li>You can use <b>Inspect Element</b> / <b>View Page Source</b> in browser to see HTML.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: COMMENTS -->
+    <section class="slide" data-level="Level 1">
+      <div class="tag">Comments</div>
+      <h2 class="slide-title">Comments in HTML</h2>
+      <div class="content">
+        <p>Comments are parts of code that should not be parsed or displayed by the browser.</p>
+        <div class="code">
+&lt;!-- This is an HTML Comment --&gt;
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: CASE SENSITIVE -->
+    <section class="slide" data-level="Level 1">
+      <div class="tag">Note</div>
+      <h2 class="slide-title">HTML is NOT Case Sensitive</h2>
+      <div class="content">
+        <p><code>&lt;p&gt;</code> = <code>&lt;P&gt;</code></p>
+        <p><code>&lt;html&gt;</code> = <code>&lt;HTML&gt;</code></p>
+        <p><code>&lt;head&gt;</code> = <code>&lt;HEAD&gt;</code></p>
+        <p><code>&lt;body&gt;</code> = <code>&lt;BODY&gt;</code></p>
+      </div>
+    </section>
+
+    <!-- SLIDE 9: ATTRIBUTES -->
+    <section class="slide" data-level="Level 2">
+      <div class="tag">Attributes</div>
+      <h2 class="slide-title">HTML Attributes</h2>
+      <div class="content">
+        <p>Attributes add extra information to a tag.</p>
+        <div class="code">
+&lt;html lang="en"&gt;
+        </div>
+        <p>Here, <code>lang="en"</code> tells the language of the document.</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 10: HEADINGS -->
+    <section class="slide" data-level="Level 2">
+      <div class="tag">Basic Tag</div>
+      <h2 class="slide-title">Heading Tag</h2>
+      <div class="content">
+        <p>Used to display headings in HTML:</p>
+        <div class="code">
+&lt;h1&gt;Main Heading&lt;/h1&gt;<br>
+&lt;h2&gt;Sub Heading&lt;/h2&gt;<br>
+&lt;h3&gt;...&lt;/h3&gt;<br>
+&lt;h4&gt;...&lt;/h4&gt;<br>
+&lt;h5&gt;...&lt;/h5&gt;<br>
+&lt;h6&gt;Least Important&lt;/h6&gt;
+        </div>
+        <p><b>&lt;h1&gt;</b> is most important, <b>&lt;h6&gt;</b> least important.</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 11: PARAGRAPH -->
+    <section class="slide" data-level="Level 2">
+      <div class="tag">Basic Tag</div>
+      <h2 class="slide-title">Paragraph Tag</h2>
+      <div class="content">
+        <p>Used to add paragraphs in HTML.</p>
+        <div class="code">
+&lt;p&gt; This is a sample paragraph &lt;/p&gt;
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 12: ANCHOR -->
+    <section class="slide" data-level="Level 2">
+      <div class="tag">Link</div>
+      <h2 class="slide-title">Anchor Tag</h2>
+      <div class="content">
+        <p>Used to add links to your page.</p>
+        <div class="code">
+&lt;a href="https://google.com"&gt; Google &lt;/a&gt;
+        </div>
+        <p><code>href</code> attribute stores the URL.</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 13: IMAGE -->
+    <section class="slide" data-level="Level 2">
+      <div class="tag">Media</div>
+      <h2 class="slide-title">Image Tag</h2>
+      <div class="content">
+        <p>Used to add images to your page.</p>
+        <div class="code">
+&lt;img src="/image.png" alt="Random Image"&gt;
+        </div>
+        <p><span class="highlight">src</span> = image path (relative URL).  
+           <span class="highlight">alt</span> = alternate text.</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 14: BR -->
+    <section class="slide" data-level="Level 2">
+      <div class="tag">Line Break</div>
+      <h2 class="slide-title">Br Tag</h2>
+      <div class="content">
+        <p>Used to add next line (line break) inside text.</p>
+        <div class="code">
+&lt;br&gt;
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 15: TEXT FORMATTING -->
+    <section class="slide" data-level="Level 2">
+      <div class="tag">Formatting</div>
+      <h2 class="slide-title">Bold, Italic &amp; Underline</h2>
+      <div class="content">
+        <p>Used to highlight text on your page.</p>
+        <div class="code">
+&lt;b&gt; Bold &lt;/b&gt;<br>
+&lt;i&gt; Italic &lt;/i&gt;<br>
+&lt;u&gt; Underline &lt;/u&gt;
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 16: BIG SMALL -->
+    <section class="slide" data-level="Level 2">
+      <div class="tag">Formatting</div>
+      <h2 class="slide-title">Big &amp; Small Tags</h2>
+      <div class="content">
+        <p>Used to display big &amp; small text.</p>
+        <div class="code">
+&lt;big&gt; Big &lt;/big&gt;<br>
+&lt;small&gt; Small &lt;/small&gt;
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 17: HR -->
+    <section class="slide" data-level="Level 2">
+      <div class="tag">Separator</div>
+      <h2 class="slide-title">Hr Tag</h2>
+      <div class="content">
+        <p>Used to display a horizontal ruler &amp; separate content.</p>
+        <div class="code">
+&lt;hr&gt;
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 18: SUB/SUP -->
+    <section class="slide" data-level="Level 2">
+      <div class="tag">Math &amp; Chem</div>
+      <h2 class="slide-title">Subscript &amp; Superscript</h2>
+      <div class="content">
+        <p>Used in chemical formulas and powers.</p>
+        <div class="code">
+&lt;sub&gt; subscript &lt;/sub&gt;<br>
+&lt;sup&gt; superscript &lt;/sup&gt;
+        </div>
+        <p>Examples: H&lt;sub&gt;2&lt;/sub&gt;O, A&lt;sup&gt;n&lt;/sup&gt; + B</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 19: PRE -->
+    <section class="slide" data-level="Level 2">
+      <div class="tag">Preformatted</div>
+      <h2 class="slide-title">Pre Tag</h2>
+      <div class="content">
+        <p>Displays text exactly as written (keeps spaces &amp; line breaks).</p>
+        <div class="code">
+&lt;pre&gt;<br>
+  This<br>
+   is a sample<br>
+    text.<br>
+&lt;/pre&gt;
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 20: PAGE LAYOUT -->
+    <section class="slide" data-level="Level 3">
+      <div class="tag">Layout</div>
+      <h2 class="slide-title">Semantic Page Layout</h2>
+      <div class="content">
+        <p>Use semantic tags for page layout:</p>
+        <div class="code">
+&lt;header&gt;...&lt;/header&gt;<br>
+&lt;main&gt;...&lt;/main&gt;<br>
+&lt;footer&gt;...&lt;/footer&gt;
+        </div>
+        <p>They describe <b>meaning</b> of sections, not just look.</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 21: INSIDE MAIN -->
+    <section class="slide" data-level="Level 3">
+      <div class="tag">Layout</div>
+      <h2 class="slide-title">Inside &lt;main&gt;</h2>
+      <div class="content">
+        <p>More semantic tags:</p>
+        <div class="code">
+&lt;section&gt;For a section on your page&lt;/section&gt;<br>
+&lt;article&gt;For an article&lt;/article&gt;<br>
+&lt;aside&gt;For content aside main (e.g. ads)&lt;/aside&gt;
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 22: REVISITING ANCHOR -->
+    <section class="slide" data-level="Level 3">
+      <div class="tag">Link</div>
+      <h2 class="slide-title">Revisiting Anchor Tag</h2>
+      <div class="content">
+        <p>Open in a new tab using <code>target="_main"</code> (or <code>_blank</code>):</p>
+        <div class="code">
+&lt;a href="https://google.com" target="_main"&gt; Google &lt;/a&gt;
+        </div>
+        <p>Make image clickable:</p>
+        <div class="code">
+&lt;a href="https://google.com"&gt;<br>
+ &nbsp;&lt;img src="link"&gt;<br>
+&lt;/a&gt;
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 23: REVISITING IMAGE -->
+    <section class="slide" data-level="Level 3">
+      <div class="tag">Media</div>
+      <h2 class="slide-title">Revisiting Image Tag</h2>
+      <div class="content">
+        <p>Set height or width with attributes:</p>
+        <div class="code">
+&lt;img src="link" height="50px"&gt;<br>
+&lt;img src="link" width="50px"&gt;
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 24: DIV -->
+    <section class="slide" data-level="Level 3">
+      <div class="tag">Container</div>
+      <h2 class="slide-title">Div Tag</h2>
+      <div class="content">
+        <p><code>&lt;div&gt;</code> is a generic container for other HTML elements.</p>
+        <p>It is a <b>block element</b> (takes full width).</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 25: SPAN -->
+    <section class="slide" data-level="Level 3">
+      <div class="tag">Container</div>
+      <h2 class="slide-title">Span Tag</h2>
+      <div class="content">
+        <p><code>&lt;span&gt;</code> is also a container for inline content.</p>
+        <p>It is an <b>inline element</b> (takes only required width).</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 26: LISTS INTRO -->
+    <section class="slide" data-level="Pro">
+      <div class="tag">Lists</div>
+      <h2 class="slide-title">Lists in HTML</h2>
+      <div class="content">
+        <p>Used to represent real-life list data.</p>
+        <ul>
+          <li><b>Unordered list</b> – bullets (<code>&lt;ul&gt;</code>).</li>
+          <li><b>Ordered list</b> – numbers (<code>&lt;ol&gt;</code>).</li>
+        </ul>
+        <div class="code">
+&lt;ul&gt;<br>
+ &lt;li&gt;Apple&lt;/li&gt;<br>
+ &lt;li&gt;Mango&lt;/li&gt;<br>
+&lt;/ul&gt;<br><br>
+&lt;ol&gt;<br>
+ &lt;li&gt;Apple&lt;/li&gt;<br>
+ &lt;li&gt;Mango&lt;/li&gt;<br>
+&lt;/ol&gt;
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 27: TABLE BASICS -->
+    <section class="slide" data-level="Pro">
+      <div class="tag">Tables</div>
+      <h2 class="slide-title">Tables in HTML – Basics</h2>
+      <div class="content">
+        <p>Tables represent table data.</p>
+        <ul>
+          <li><code>&lt;tr&gt;</code> – table row</li>
+          <li><code>&lt;th&gt;</code> – table header cell</li>
+          <li><code>&lt;td&gt;</code> – table data cell</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SLIDE 28: TABLE EXAMPLE -->
+    <section class="slide" data-level="Pro">
+      <div class="tag">Tables</div>
+      <h2 class="slide-title">Table Example</h2>
+      <div class="content">
+        <div class="code">
+&lt;table&gt;<br>
+ &lt;tr&gt;<br>
+  &lt;th&gt; Name &lt;/th&gt;<br>
+  &lt;th&gt; Roll No &lt;/th&gt;<br>
+ &lt;/tr&gt;<br>
+ &lt;tr&gt;<br>
+  &lt;td&gt; Shradha &lt;/td&gt;<br>
+  &lt;td&gt; 1664 &lt;/td&gt;<br>
+ &lt;/tr&gt;<br>
+&lt;/table&gt;
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 29: CAPTION & THEAD/TBODY & COLSPAN -->
+    <section class="slide" data-level="Pro">
+      <div class="tag">Tables</div>
+      <h2 class="slide-title">Caption, thead, tbody &amp; colspan</h2>
+      <div class="content">
+        <ul>
+          <li><code>&lt;caption&gt;</code> – table heading.</li>
+          <li><code>&lt;thead&gt;</code> – wrap table head rows.</li>
+          <li><code>&lt;tbody&gt;</code> – wrap body rows.</li>
+          <li><code>colspan="n"</code> – cell spans over multiple columns.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SLIDE 30: FORM INTRO -->
+    <section class="slide" data-level="Pro">
+      <div class="tag">Forms</div>
+      <h2 class="slide-title">Forms in HTML</h2>
+      <div class="content">
+        <p>Forms are used to collect data from the user.</p>
+        <p>Examples: sign up, login, help requests, contact forms.</p>
+        <div class="code">
+&lt;form&gt;<br>
+  form content<br>
+&lt;/form&gt;
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 31: ACTION -->
+    <section class="slide" data-level="Pro">
+      <div class="tag">Forms</div>
+      <h2 class="slide-title">Form Action</h2>
+      <div class="content">
+        <p><code>action</code> attribute defines what happens when form is submitted.</p>
+        <div class="code">
+&lt;form action="/action.php"&gt;<br>
+  ...<br>
+&lt;/form&gt;
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 32: INPUT -->
+    <section class="slide" data-level="Pro">
+      <div class="tag">Input</div>
+      <h2 class="slide-title">Form Element: &lt;input&gt;</h2>
+      <div class="content">
+        <div class="code">
+&lt;input type="text" placeholder="Enter Name"&gt;
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 33: LABEL + RADIO -->
+    <section class="slide" data-level="Pro">
+      <div class="tag">Label</div>
+      <h2 class="slide-title">Label &amp; Radio</h2>
+      <div class="content">
+        <div class="code">
+&lt;input type="radio" value="Class X" name="class" id="id1"&gt;<br>
+&lt;label for="id1"&gt;Class X&lt;/label&gt;<br><br>
+&lt;input type="radio" value="Class Y" name="class" id="id2"&gt;<br>
+&lt;label for="id2"&gt;Class Y&lt;/label&gt;
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 34: CLASS & ID -->
+    <section class="slide" data-level="Pro">
+      <div class="tag">Selectors</div>
+      <h2 class="slide-title">Class &amp; Id</h2>
+      <div class="content">
+        <div class="code">
+&lt;div id="id1" class="group1"&gt;&lt;/div&gt;<br>
+&lt;div id="id2" class="group1"&gt;&lt;/div&gt;
+        </div>
+        <p><b>id</b> – unique per page.  
+           <b>class</b> – can be shared by many elements.</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 35: CHECKBOX -->
+    <section class="slide" data-level="Pro">
+      <div class="tag">Input</div>
+      <h2 class="slide-title">Checkbox</h2>
+      <div class="content">
+        <div class="code">
+&lt;input type="checkbox" value="Class X" name="class" id="c1"&gt;<br>
+&lt;label for="c1"&gt;Class X&lt;/label&gt;<br><br>
+      <h2 class="slide-title">Select (Dropdown)</h2>
+      <div class="content">
+        <div class="code">
+&lt;select name="city" id="city"&gt;<br>
+  &lt;option value="Delhi"&gt;Delhi&lt;/option&gt;<br>
+  &lt;option value="Mumbai"&gt;Mumbai&lt;/option&gt;<br>
+  &lt;option value="Bangalore"&gt;Bangalore&lt;/option&gt;<br>
+&lt;/select&gt;
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 38: IFRAME -->
+    <section class="slide" data-level="Pro">
+      <div class="tag">Media</div>
+      <h2 class="slide-title">iframe Tag</h2>
+      <div class="content">
+        <p>Used to show a website inside another website.</p>
+        <div class="code">
+&lt;iframe src="https://example.com"&gt;Link&lt;/iframe&gt;
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 39: VIDEO -->
+    <section class="slide" data-level="Pro">
+      <div class="tag">Media</div>
+      <h2 class="slide-title">Video Tag</h2>
+      <div class="content">
+        <p>Embed a video file:</p>
+        <div class="code">
+&lt;video src="myVid.mp4" controls&gt; My Video &lt;/video&gt;
+        </div>
+        <p>Attributes: <b>controls</b>, <b>height</b>, <b>width</b>, <b>loop</b>, <b>autoplay</b>.</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 40: GOOD LUCK -->
+    <section class="slide" data-level="Pro">
+      <div class="tag">Finish</div>
+      <h2 class="slide-title">All the very best! 🎉</h2>
+      <div class="content">
+        <p>You have revised all HTML notes from the PDF in this animated web page.</p>
+        <p>Keep practising &amp; building projects. 💻</p>
+        <p style="margin-top:10px;font-size:13px;color:#9ca3af;">
+          Inspired by notes from Aman bhaiya &amp; Shradha didi.
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <button class="btn" id="prevBtn">&larr; Previous</button>
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="slide-count" id="slideCount">Slide 1 / 40</div>
+    <button class="btn" id="nextBtn">Next &rarr;</button>
+  </div>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const progressBar = document.getElementById("progressBar");
+    const slideCountEl = document.getElementById("slideCount");
+    const levelText = document.getElementById("levelText");
+
+    let current = 0;
+    let last = 0; // used to mark the slide that is leaving (for directional animation)
+
+    function updateSlides() {
+      slides.forEach((slide, index) => {
+        slide.classList.remove("active", "prev");
+        if (index === current) {
+          slide.classList.add("active");
+        }
+        if (index === last && index !== current) {
+          // mark the leaving slide so it animates in the opposite direction
+          slide.classList.add("prev");
+        }
+      });
+
+      const total = slides.length;
+      slideCountEl.textContent = `Slide ${current + 1} / ${total}`;
+      progressBar.style.width = ((current + 1) / total) * 100 + "%";
+
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === total - 1;
+
+      const level = slides[current].getAttribute("data-level");
+      levelText.textContent = level;
+    }
+
+    prevBtn.addEventListener("click", () => {
+      if (current > 0) {
+        last = current;
+        current--;
+        updateSlides();
+      }
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (current < slides.length - 1) {
+        last = current;
+        current++;
+        updateSlides();
+      }
+    });
+
+    // Keyboard support: left/right arrows
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") nextBtn.click();
+      if (e.key === "ArrowLeft") prevBtn.click();
+    });
+
+    // Touch / swipe support (vertical swipe)
+    (function addTouchSupport() {
+      const wrapper = document.querySelector('.slide-wrapper');
+      let startY = 0;
+      let startTime = 0;
+
+      wrapper.addEventListener('touchstart', (e) => {
+        if (!e.touches || e.touches.length === 0) return;
+        startY = e.touches[0].clientY;
+        startTime = Date.now();
+      }, { passive: true });
+
+      wrapper.addEventListener('touchend', (e) => {
+        const endY = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientY : startY;
+        const dy = startY - endY;
+        const dt = Date.now() - startTime;
+        const threshold = 40; // px
+        const quickTime = 300; // ms
+
+        // Swipe up -> next, Swipe down -> prev
+        if (Math.abs(dy) > threshold && dt < 1000) {
+          if (dy > threshold) {
+            nextBtn.click();
+          } else if (dy < -threshold) {
+            prevBtn.click();
+          }
+        }
+      }, { passive: true });
+    })();
+
+    const levelInput = document.getElementById('levelInput');
+    const goLevelBtn = document.getElementById('goLevelBtn');
+
+    function goToLevel(value) {
+      const v = (value || '').trim();
+      if (!v) return;
+      let target;
+      if (/^\d+$/.test(v)) {
+        target = 'Level ' + v;
+      } else if (/^level\s*\d+$/i.test(v)) {
+        target = v.replace(/\s+/,' ').replace(/(^level\s*)/i,'Level ');
+      } else if (/^pro$/i.test(v)) {
+        target = 'Pro';
+      } else {
+        target = v.charAt(0).toUpperCase() + v.slice(1);
+      }
+      const idx = slides.findIndex(s => s.getAttribute('data-level') === target);
+      if (idx >= 0) {
+        last = current;
+        current = idx;
+        updateSlides();
+        levelInput.value = '';
+      } else {
+        levelInput.classList.add('invalid');
+        setTimeout(() => levelInput.classList.remove('invalid'), 700);
+      }
+    }
+    
+    goLevelBtn.addEventListener('click', () => goToLevel(levelInput.value));
+    levelInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') goToLevel(levelInput.value);
+    });
+    
+    updateSlides();
+  </script>
+</body>
+</html>
